@@ -1,4 +1,36 @@
+import datetime
+
 from django import forms
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
     
 class RenewBookForm(forms.Form):
+
+
+    '''The constructor '''
+    def __init__(self, *args, **kwargs):
+        book_instance = kwargs.pop('book_instance', None)
+        super(RenewBookForm, self).__init__(*args, **kwargs)
+        self.book_instance = book_instance
+        print(book_instance)
+        #print(self.fields)
+
     renewal_date = forms.DateField(help_text="Enter a date between now and 4 weeks (default 3).")
+    def clean_renewal_date(self):
+        data = self.cleaned_data['renewal_date']
+        print('in clean renewal data')
+        print(data)
+        
+        # Check if a date is not in the past. 
+        if data < datetime.date.today():
+            raise ValidationError(_('Invalid date - renewal in past'))
+
+        if data < self.book_instance.due_back:
+            raise ValidationError(_('Invalid date - renewal before due date'))
+
+        # Check if a date is in the allowed range (+4 weeks from today).
+        if data > self.book_instance.due_back + datetime.timedelta(weeks=4):
+            raise ValidationError(_('Invalid date - renewal more than 4 weeks ahead'))
+
+        # Remember to always return the cleaned data.
+        return data
