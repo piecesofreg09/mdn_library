@@ -2,6 +2,8 @@ from django.db import models
 from django.urls import reverse # Used to generate URLs by reversing the URL patterns
 from django.contrib.auth.models import User
 from datetime import date
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 class Genre(models.Model):
@@ -115,3 +117,12 @@ class Author(models.Model):
     
     def life_span(self):
         return f'{self.date_of_birth} - {self.date_of_death}'
+    
+    def clean(self):
+        if self.date_of_death < self.date_of_birth:
+            raise ValidationError(_('death date %(death)s is before birth date%(birth)s'),
+                params={'death': self.date_of_death, 'birth': self.date_of_birth})
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(Author, self).save(*args, **kwargs)
