@@ -7,6 +7,9 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+
 import datetime
 
 # Create your views here.
@@ -56,7 +59,7 @@ class BookListView(generic.ListView):
     #queryset = Book.objects.filter(title__icontains='war')[:5] 
     # Specify your own template name/location
     #template_name = 'books/my_arbitrary_template_name_list.html' 
-    paginate_by = 3
+    paginate_by = 5
 
 class BookDetailView(generic.DetailView):
     model = Book
@@ -64,7 +67,7 @@ class BookDetailView(generic.DetailView):
 
 class AuthorListView(generic.ListView):
     model = Author
-    paginate_by = 3
+    paginate_by = 5
 
 class AuthorDetailView(generic.DetailView):
     model = Author
@@ -136,3 +139,34 @@ def renew_book_librarian(request, pk):
     #print(context)
 
     return render(request, 'catalog/book_renew_librarian.html', context)
+
+# Author Edit
+class AuthorCreate(CreateView):
+    model = Author
+    fields = '__all__'
+    initial = {'date_of_death': '05/01/2018'}
+    template_name_suffix = '_create_edit'
+
+class AuthorUpdate(UpdateView):
+    model = Author
+    fields = ['first_name', 'last_name', 'date_of_birth', 'date_of_death']
+
+class AuthorDelete(DeleteView):
+    model = Author
+    # success_url after deleting objects
+    success_url = reverse_lazy('authors')
+
+# Book 
+class BookCreate(CreateView):
+    model = Book
+    fields = '__all__'
+    template_name_suffix = '_create_edit'
+
+class BookUpdate(UpdateView):
+    model = Book
+    fields = '__all__'
+
+class BookDelete(DeleteView):
+    model = Book
+    # success_url after deleting objects
+    success_url = reverse_lazy('books')
