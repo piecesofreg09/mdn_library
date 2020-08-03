@@ -14,15 +14,16 @@ class RenewBookForm(forms.Form):
         book_instance = kwargs.pop('book_instance', None)
         super(RenewBookForm, self).__init__(*args, **kwargs)
         self.book_instance = book_instance
-        print(book_instance)
+        #print('in constructor')
+        #print(book_instance)
         #print(self.fields)
 
     renewal_date = forms.DateField(help_text="Enter a date between now and 4 weeks (default 3).")
     
     def clean_renewal_date(self):
         data = self.cleaned_data['renewal_date']
-        print('in clean renewal data')
-        print(data)
+        #print('in clean renewal data')
+        #print(data)
         
         # Check if a date is not in the past. 
         if data < datetime.date.today():

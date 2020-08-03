@@ -116,8 +116,22 @@ class Author(models.Model):
         return f'{self.last_name}, {self.first_name}'
     
     def life_span(self):
-        return f'{self.date_of_birth} - {self.date_of_death}'
+        life = ''
+        if self.date_of_birth:
+            if  self.date_of_birth:
+                life = f'{self.date_of_birth} - {self.date_of_death}'
+            else:
+                life = f'unknown - {self.date_of_death}'
+        else:
+            if  self.date_of_birth:
+                life = f'{self.date_of_birth} - unknown'
+            else:
+                life = 'not clear.'
+        
+        return life
     
+    '''
+    # the following two functions can be used to validate the birth date
     def clean(self):
         if self.date_of_death < self.date_of_birth:
             raise ValidationError(_('death date %(death)s is before birth date%(birth)s'),
@@ -126,3 +140,4 @@ class Author(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         return super(Author, self).save(*args, **kwargs)
+    '''
