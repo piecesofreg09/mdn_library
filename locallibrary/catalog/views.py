@@ -109,9 +109,9 @@ def renew_book_librarian(request, pk):
         
         # Create a form instance and populate it with data from the request (binding):
         form = RenewBookForm(request.POST, book_instance=book_instance)
-        print(form)
-        print(form.is_bound)
-        print(form.is_valid())
+        #print(form)
+        #print(form.is_bound)
+        #print(form.is_valid())
         # Check if the form is valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
@@ -141,11 +141,12 @@ def renew_book_librarian(request, pk):
     return render(request, 'catalog/book_renew_librarian.html', context)
 
 # Author Edit
-class AuthorCreate(CreateView):
+class AuthorCreate(PermissionRequiredMixin, CreateView):
     model = Author
     fields = '__all__'
     initial = {'date_of_death': '05/01/2018'}
     template_name_suffix = '_create_edit'
+    permission_required = 'catalog.can_mark_returned'
 
 class AuthorUpdate(UpdateView):
     model = Author
